@@ -36,5 +36,11 @@ def _add_command(cmd: Coroutine):
 async def _balance(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
-
 _add_command(_balance)
+
+@commands.command(name="shop")
+async def _shop(ctx: Context, *args, **kwargs):
+    raise NotImplementedError()
+_add_command(_shop)
+
+
