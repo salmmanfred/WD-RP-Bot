@@ -16,9 +16,19 @@ class Server(object):
         Session.configure(bind=self.engine)
         self.session = Session()
         logger.debug("Creating database tables")
-        Base.metadata.create_all()
+        Base.metadata.create_all(self.engine)
         logger.debug("Tables created successfully")
         logger.info("Server started successfully")
 
     def _get_session(self) -> orm.Session:
         return self.session
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        self._get_session().flush()
+        self._get_session().close()

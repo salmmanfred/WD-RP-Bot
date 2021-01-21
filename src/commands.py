@@ -9,8 +9,10 @@ _commands = []  # an array of command callables
 _server = None
 _ready = False
 
+
 def get_server() -> Server:
     return _server
+
 
 async def do_ready(ctx: Context):
     raise NotImplementedError()
@@ -23,7 +25,7 @@ def register_commands(bot: commands.Bot, s: Server):
     for i in _commands:
         bot.add_command(i)
 
-    ready=True
+    ready = True
 
 
 def _add_command(cmd: Coroutine):
@@ -31,7 +33,8 @@ def _add_command(cmd: Coroutine):
 
 
 @commands.command(name="balance")
-def _balance(ctx: Context, *args, **kwargs):
+async def _balance(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
 
+_add_command(_balance)

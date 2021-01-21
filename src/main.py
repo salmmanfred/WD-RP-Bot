@@ -88,6 +88,7 @@ def set_up_webhook(url, *loggers):
 @click.option('--token', help='The token used to connect to the discord bot')
 @click.option('--logging_url', help='the url to send logging webhook events to')
 @click.option('--prefix', help='the prefix for the bot')
+@click.option('--url', help='the url for the database')
 def main(fp, **configs):
     c = read_config(fp)
     c.update(configs)
@@ -96,7 +97,9 @@ def main(fp, **configs):
         set_up_webhook(url, logger, al)  # I don't want to log discord stuff to webhooks
     prefix = 'wd!' if c["prefix"] is not None else c["prefix"]
     bot = commands.Bot(command_prefix=prefix)
-    register_commands(bot)
+    with accounting.Server(c["url"]) as server:
+        register_commands(bot, server)
+
     bot.run(c["token"])
 
 

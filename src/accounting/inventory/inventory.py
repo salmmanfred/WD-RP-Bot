@@ -1,16 +1,9 @@
 import logging
 from sqlalchemy import Column, JSON, BigInteger, ForeignKey, text, INTEGER, Boolean
 from . import Base
-from . import Farm
-from . import Gun
 import sys, inspect
 
 logger = logging.getLogger(__name__)
-
-_type_map = {
-    "FARM": Farm,
-    "GUN": Gun
-}
 
 
 class InventoryObject(object):
