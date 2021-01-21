@@ -5,12 +5,12 @@ This python package will contain all of the information needed to simulate the e
 import logging
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from .server import Server
-from .account import Account
-from .inventory import Inventory
-from .farm import Farm
-
 Base = declarative_base()
 Session = sessionmaker()
+from .server import Server
+from .account import Account
+from .inventory.inventory import Inventory
+
+
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

@@ -1,6 +1,8 @@
 from enum import Enum
 import logging
+from .inventory import InventoryObject
 from collections import defaultdict
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +16,9 @@ class FarmType(Enum):
     WHEAT = (100, 10, 12)
 
 
-class Farm(object):
+class Farm(InventoryObject):
     def __init__(self, farm_type: FarmType, ticks_left):
+        super().__init__(farm_type.name, farm_type.value)
         logger.debug("new farm object created")
         self.type = farm_type
         self.ticks_left = ticks_left
