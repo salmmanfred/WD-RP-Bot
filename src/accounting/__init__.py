@@ -7,8 +7,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .server import Server
 from .account import Account
-from .inventory import Inventory
+from .inventory.inventory import Inventory
 from .farm import Farm
+from .gun import Gun
 
 Base = declarative_base()
 Session = sessionmaker()
