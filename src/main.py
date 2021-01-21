@@ -89,7 +89,7 @@ def set_up_webhook(url, *loggers):
 
 
 @click.command()
-@click.option('--fp', help='The config file path')
+@click.option('--fp', default='config.json', help='The config file path')
 @click.option('--token', help='The token used to connect to the discord bot')
 @click.option('--logging_url', help='the url to send logging webhook events to')
 @click.option('--prefix', help='the prefix for the bot')
