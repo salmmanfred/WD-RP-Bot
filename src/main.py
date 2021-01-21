@@ -9,7 +9,7 @@ from os import mkdir
 import click
 import json
 from collections import defaultdict
-
+import sys
 from commands import register_commands
 
 try:
@@ -17,7 +17,12 @@ try:
 except FileExistsError:
     pass
 
-fh = logging.FileHandler(f'./logs/{datetime.now()}.log'.replace(' ', '-'))
+fp = f'./logs/{datetime.now()}.log'.replace(' ', '-')
+
+if sys.platform.lower() == 'windows':
+    fp.replace(':', '.')
+
+fh = logging.FileHandler(fp)
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
