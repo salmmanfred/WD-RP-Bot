@@ -106,6 +106,7 @@ def main(fp, **configs):
 if __name__ == '__main__':
     al = add_logger(accounting.__name__)
     add_logger(discord.__name__)
+    add_logger(commands.__name__)
     logger = add_logger(__name__)
     logger.info('Started!')
     main()

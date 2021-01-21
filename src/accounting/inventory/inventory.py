@@ -34,7 +34,6 @@ class Inventory(Base):
     owner = Column(BigInteger, ForeignKey('accounts.id'), primary_key=True)
     _cls_map = {}
     for cls in InventoryAttribute.__subclasses__():
-        # this probably could be improved
         __dict__[cls.__attributename__] = Column(INTEGER, server_default=text(str(cls.__default__)), default=cls.__default_generator__)
         _cls_map[cls.__attributename__] = cls
 
