@@ -1,2 +1,2 @@
-def bounce_back(ctx):
-    ctx.send("bounce")
+async def bounce_back(ctx):
+    await ctx.send("bounce")
