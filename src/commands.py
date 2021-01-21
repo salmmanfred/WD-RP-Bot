@@ -3,6 +3,8 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 from accounting import Server
+from datetime import datetime
+import time
 import logging
 
 _commands = []  # an array of command callables
@@ -33,11 +35,19 @@ def _add_command(cmd: Coroutine):
 async def _balance(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
+
 _add_command(_balance)
+
+
+@commands.command(name="ping")
+async def _ping(ctx: Context, *args, **kwargs):
+    await ctx.reply(f'Pong! - took me {round((time.time()-datetime.timestamp(ctx.message.created_at))*1000, 2)}ms to send a response')
+
+_add_command(_ping)
 
 @commands.command(name="shop")
 async def _shop(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
+
+
 _add_command(_shop)
-
-

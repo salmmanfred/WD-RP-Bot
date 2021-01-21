@@ -1,8 +1,7 @@
 from enum import Enum
-from .inventory import InventoryFlag, InventoryAttribute
 
 
-class Gun(InventoryFlag, Enum):
+class Gun(Enum):
     pass
 
 
@@ -11,19 +10,19 @@ class Ammunition(object):
     damage_modifier = 0
 
 
-class ArmourPiercingAmmo(InventoryAttribute, Ammunition):
+class ArmourPiercingAmmo(Ammunition):
     __attributename__ = "armour_piercing_ammo"
     price = 1000
     damage_modifier = 1000
 
 
-class HeavyAmmunition(InventoryAttribute, Ammunition):
+class HeavyAmmunition(Ammunition):
     __attributename__ = "heavy_ammo"
     price = 500
     damage_modifier = 500
 
 
-class NormalAmmunition(InventoryAttribute, Ammunition):
+class NormalAmmunition(Ammunition):
     __attributename__ = "normal_ammo"
     price = 100
     damage_modifier = 0

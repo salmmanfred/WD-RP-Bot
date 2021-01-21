@@ -4,7 +4,7 @@ import sqlalchemy
 from . import Session
 from . import Base
 from . import Account
-from .inventory import Inventory
+from .inventory import InventoryObject
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class Server(object):
         logger.info("Stopping the server")
         self._get_session().flush()
         self._get_session().close()
-        logger.info("")
+        logger.info("Stopped the server")
 
     def has_account(self, id) -> bool:
         amount = self._get_session().query(Account).filter_by(id=id).count()
@@ -47,11 +47,9 @@ class Server(object):
     def open_account(self, user) -> Account:
         if self.has_account(user.id):
             return self.get_account(user.id)
-
+        logger.info(f"opening account {user.mention}")
         acc = Account.from_user(user)
         self._get_session().add(acc)
         self._get_session().commit()
-        inventory = Inventory(owner=user.id)
-        self._get_session().add(inventory)
-        self._get_session().commit()
+        logger.info(f"opened account {user.mention}")
         return acc
