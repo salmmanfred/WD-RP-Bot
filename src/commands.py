@@ -6,6 +6,8 @@ from accounting import Server
 from datetime import datetime
 import time
 import logging
+import argparse
+from economy import shop
 
 _commands = []  # an array of command callables
 _server = None
@@ -35,7 +37,6 @@ def _add_command(cmd: Coroutine):
 async def _balance(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
-
 _add_command(_balance)
 
 
@@ -49,5 +50,6 @@ _add_command(_ping)
 async def _shop(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
-
 _add_command(_shop)
+
+
