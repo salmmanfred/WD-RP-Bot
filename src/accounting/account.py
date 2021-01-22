@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, BigInteger, DECIMAL, text, JSON
 from . import Base
-from .inventory import Inventory
+from .inventory import InventoryObject
 import logging
 from discord import Client, User
 
@@ -12,7 +12,7 @@ class Account(Base):
     __tablename__ = 'accounts'
     id = Column(BigInteger, primary_key=True)
     balance = Column(DECIMAL(precision=2), server_default=text('0'))
-    inventory = relationship(Inventory)
+    inventory = relationship(InventoryObject)
     user = None
 
     def __init__(self, user=None, **kwargs):

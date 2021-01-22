@@ -9,7 +9,7 @@ from os import mkdir
 import click
 import json
 from collections import defaultdict
-
+import sys
 from commands import register_commands
 
 try:
@@ -17,7 +17,12 @@ try:
 except FileExistsError:
     pass
 
-fh = logging.FileHandler(f'./logs/{datetime.now()}.log'.replace(' ', '-'))
+fp = f'./logs/{datetime.now()}.log'.replace(' ', '-')
+
+if sys.platform.lower() == 'windows':
+    fp.replace(':', '.')
+
+fh = logging.FileHandler(fp)
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
@@ -84,7 +89,7 @@ def set_up_webhook(url, *loggers):
 
 
 @click.command()
-@click.option('--fp', help='The config file path')
+@click.option('--fp', default='config.json', help='The config file path')
 @click.option('--token', help='The token used to connect to the discord bot')
 @click.option('--logging_url', help='the url to send logging webhook events to')
 @click.option('--prefix', help='the prefix for the bot')
@@ -95,17 +100,17 @@ def main(fp, **configs):
     url = c["logging_url"]
     if url is not None:
         set_up_webhook(url, logger, al)  # I don't want to log discord stuff to webhooks
-    prefix = 'wd!' if c["prefix"] is not None else c["prefix"]
+    prefix = 'wd!' if c["prefix"] is None else c["prefix"]
     bot = commands.Bot(command_prefix=prefix)
     with accounting.Server(c["url"]) as server:
         register_commands(bot, server)
-
-    bot.run(c["token"])
+        bot.run(c["token"])
 
 
 if __name__ == '__main__':
     al = add_logger(accounting.__name__)
     add_logger(discord.__name__)
+    add_logger(commands.__name__)
     logger = add_logger(__name__)
     logger.info('Started!')
     main()
