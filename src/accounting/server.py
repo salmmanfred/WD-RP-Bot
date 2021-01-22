@@ -65,7 +65,7 @@ class Server(object):
         """
         return self.get_shop_entries(**filters)[0]
 
-    def add_shop_entry(self, name, value, emoji_id, uuid=None):
-        entry = ShopEntry(name=name, value=value, emoji_id=emoji_id, uuid=uuid)
+    def add_shop_entry(self, name, value, emoji, uuid=None):
+        entry = ShopEntry(name=name, value=value, emoji=emoji, uuid=uuid)
         self._get_session().add(entry)
         return entry
