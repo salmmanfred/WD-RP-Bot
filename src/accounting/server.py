@@ -1,11 +1,13 @@
 import logging
+from typing import List
+
 from sqlalchemy import orm
 import sqlalchemy
 from . import Session
 from . import Base
 from . import Account
 from .inventory import InventoryObject
-
+from . import ShopEntry
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +52,20 @@ class Server(object):
         logger.info(f"opening account {user.mention}")
         acc = Account.from_user(user)
         self._get_session().add(acc)
-        self._get_session().commit()
         logger.info(f"opened account {user.mention}")
         return acc
+
+    def get_shop_entries(self, **filters) -> List[ShopEntry]:
+        return self._get_session().query(ShopEntry).filter_by(**filters).all()
+
+    def get_shop_entry(self, **filters):
+        """
+        :param filters: the filters to apply to the query
+        :return: the first entry that matches your query
+        """
+        return self.get_shop_entries(**filters)[0]
+
+    def add_shop_entry(self, name, value, emoji_id, uuid=None):
+        entry = ShopEntry(name=name, value=value, emoji_id=emoji_id, uuid=uuid)
+        self._get_session().add(entry)
+        return entry

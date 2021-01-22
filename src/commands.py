@@ -48,7 +48,7 @@ _add_command(_ping)
 
 @commands.command(name="shop")
 async def _shop(ctx: Context, *args, **kwargs):
-    await shop.shop(ctx)
+    await shop.shop(ctx, get_server())
 
 _add_command(_shop)
 
