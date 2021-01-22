@@ -20,3 +20,4 @@ async def shop(ctx: Context, server):
     # emoji = '\N{REGIONAL INDICATOR E}'
     for i in emojis:
         await msg.add_reaction(i)
+
