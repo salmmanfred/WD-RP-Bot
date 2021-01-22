@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, BigInteger, DECIMAL, text, JSON
 from . import Base
-from .inventory import InventoryObject
+from .inventory import InventoryEntry
 import logging
 from discord import Client, User
 
@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 class Account(Base):
     __tablename__ = 'accounts'
     id = Column(BigInteger, primary_key=True)
-    balance = Column(DECIMAL(precision=2), server_default=text('0'))
-    inventory = relationship(InventoryObject)
+    balance = Column(DECIMAL, server_default=text('0'))
+    inventory = relationship(InventoryEntry)
     user = None
 
     def __init__(self, user=None, **kwargs):
@@ -27,6 +27,9 @@ class Account(Base):
             return None
         self.user = await bot.fetch_user(self.id)
         return self.user
+
+    def get_inventory(self):
+        return [i.get_items() for i in self.inventory]
 
     @classmethod
     def from_user(cls, user: User):

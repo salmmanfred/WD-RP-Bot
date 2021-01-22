@@ -1,5 +1,5 @@
 from .. import Base
 from .gun import Gun
 from .farm import Farm
-from .inventory import InventoryObject
+from .inventory import InventoryEntry, InventoryType, ItemType
 
