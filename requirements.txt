@@ -2,3 +2,4 @@ discord
 click
 sqlalchemy
 psycopg2-binary
+requests
