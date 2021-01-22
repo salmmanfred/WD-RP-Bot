@@ -19,8 +19,8 @@ except FileExistsError:
 
 fp = f'./logs/{datetime.now()}.log'.replace(' ', '-')
 
-if sys.platform.lower() == 'windows':
-    fp.replace(':', '.')
+if sys.platform.lower() == 'win32':
+    fp = fp.replace(':', '.')
 
 fh = logging.FileHandler(fp)
 fh.setLevel(logging.DEBUG)
@@ -33,7 +33,7 @@ formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] : %(mess
 ch.setFormatter(formatter)
 fh.setFormatter(formatter)
 
-_default_config = defaultdict(None)
+#__default_config = defaultdict(lambda: None)
 
 
 class DiscordWebhookHandler(logging.Handler):
@@ -74,11 +74,14 @@ def add_logger(name=None):
 
 
 def read_config(fp):
+    _default_config = defaultdict(lambda: None)
     try:
-        return _default_config.update(json.load(fp))
+        _default_config.update(json.load(open(fp,"r")))
+        return _default_config
     except Exception:
         logger.warning(f'{fp} is either malformed or non existent defaulting to the default configuration')
-        return _default_config
+    
+    return _default_config
 
 
 def set_up_webhook(url, *loggers):
@@ -96,6 +99,15 @@ def set_up_webhook(url, *loggers):
 @click.option('--url', help='the url for the database')
 def main(fp, **configs):
     c = read_config(fp)
+    print(type(c))
+    
+    keys_to_delete = []
+    for k in configs.keys():
+        if configs[k] is None:
+            keys_to_delete.append(k)
+
+    for k in keys_to_delete:
+        del configs[k]
     c.update(configs)
     url = c["logging_url"]
     if url is not None:
