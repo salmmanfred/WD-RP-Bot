@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from accounting import Server
 import argparse
+from economy import shop
 
 _commands = []  # an array of command callables
 _server = None
@@ -41,6 +42,7 @@ _add_command(_balance)
 @commands.command(name="shop")
 async def _shop(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
+
 _add_command(_shop)
 
 
