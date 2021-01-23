@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 from typing import List
 from discord import User
 from sqlalchemy import orm
@@ -6,10 +7,14 @@ import sqlalchemy
 from . import Session
 from . import Base
 from . import Account
-from .inventory.inventory import InventoryEntry, item_class_map
+from .inventory.inventory import InventoryEntry, item_class_map, ItemType, reversed_class_map
 from . import ShopEntry
 
 logger = logging.getLogger(__name__)
+
+
+def _can_transfer(source: Account, amount: Decimal):
+    return source.balance >= amount
 
 
 class Server(object):
@@ -65,19 +70,59 @@ class Server(object):
     def get_shop_entries(self, **filters) -> List[ShopEntry]:
         return self._get_session().query(ShopEntry).filter_by(**filters).all()
 
-    def give(self, user, item, amount=1):
-        acc = self.get_account(user)
-        entry = self._get_session().query(InventoryEntry).filter_by(owner=acc.id, item_type=item).one_or_none()
+    def transfer_cash(self, source, destination, amount):
+        source_acc = self.get_account(source)
+        destination_acc = self.get_account(destination)
+
+        if _can_transfer(source, amount):
+            source_acc.balance -= amount
+            destination_acc.balance -= amount
+
+    def transfer_item(self, source, destination, type, index=None, amount=None):
+        if index is not None and amount is not None:
+            raise ValueError("both index and amount can't be specified")
+        if index is None and amount is None:
+            amount = 1
+        source_acc = self.get_account(source)
+        destination_acc = self.get_account(destination)
+        source_entry = self.get_inventory_entry(source_acc, type)
+        destination_entry = self.get_inventory_entry(destination_acc, type)
+        items = source_entry.get_items()
+
+        def transfer(index):
+            if index >= len(items):
+                raise KeyError("That entry does not exist")
+            item = items[index]
+            source_entry.remove_item(index)
+            destination_entry.add_item(item)
+
+        if index is not None:
+            transfer(index)
+
+        if amount is not None:
+            if amount > len(items):
+                raise ValueError("The source account does not have enough items")
+            for i in range(amount):
+                transfer(0)
+
+    @staticmethod
+    def get_type(item):
+        return ItemType(reversed_class_map[item])
+
+    def get_inventory_entry(self, account, type):
+        entry = self._get_session().query(InventoryEntry).filter_by(owner=account.id, item_type=type).one_or_none()
         if entry is None:
-            entry = InventoryEntry(owner=acc.id, item_type=item,
-                                   item_info=[item_class_map[item]().to_json() for i in range(amount)])
+            entry = InventoryEntry(owner=account.id, item_type=type)
             self._get_session().add(entry)
             self._get_session().flush()
-        else:
-            assert isinstance(entry, InventoryEntry)
-            for i in range(amount):
-                entry.add_item(item_class_map[item]())
-            self._get_session().flush()
+        return entry
+
+    def give(self, user, item, amount=1):
+        acc = self.get_account(user)
+        entry = self.get_inventory_entry(acc, item)
+        for i in range(amount):
+            entry.add_item(item_class_map[item]())
+        self._get_session().flush()
 
     def get_shop_entry(self, **filters):
         """
@@ -86,8 +131,7 @@ class Server(object):
         """
         return self.get_shop_entries(**filters)[0]
 
-    def add_shop_entry(self, name, value, emoji, uuid=None):
-        entry = ShopEntry(name=name, value=value, emoji=emoji, uuid=uuid)
-        logger.info(f"added an entry with: name={name}, value={value}, emoji={uuid} ")
+    def add_shop_entry(self, name, value, type, emoji, uuid=None):
+        entry = ShopEntry(name=name, value=value, item=type, emoji=emoji, uuid=uuid)
         self._get_session().add(entry)
         return entry
