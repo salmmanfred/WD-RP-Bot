@@ -10,12 +10,14 @@ async def bounce_back(ctx):
 async def shop(ctx: Context, server):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
     shop_entries = json.load(open("economy/shop.json","r"))   
-    server.add_shop_entry("gun",100,"🇦",10202)
+    #server.add_shop_entry("Handgun",100,"🇦")
+    #server.add_shop_entry("Handgun",100,"🇧")
+
     shopen = server.get_shop_entries()
     if len(shop_entries) >= 10:
         return
     emojis = []
-    for x in shop_entries["page1"]:
+    for x in shop_entries["gun"]:
         embed_var.add_field(name=""+x["name"], value=f" "+ x["emoji"] +":" + str(x["value"]), inline=False)
         emojis.append(x["emoji2"])
     msg = await ctx.reply(embed=embed_var)
