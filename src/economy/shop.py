@@ -23,6 +23,5 @@ async def shop(ctx: Context, server):
     msg = await ctx.reply(embed=embed_var)
     # emoji = '\N{REGIONAL INDICATOR E}'
     for i in shopen:
-        print(str(i.emoji)+"         #######################################################################################################################");
         await msg.add_reaction(i.emoji)
 
