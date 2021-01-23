@@ -10,6 +10,7 @@ async def bounce_back(ctx):
 async def shop(ctx: Context, server):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
     shop_entries = json.load(open("economy/shop.json","r"))   
+    server.add_shop_entry("gun",100,"🇦",10202)
     shopen = server.get_shop_entries()
     if len(shop_entries) >= 10:
         return
