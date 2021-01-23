@@ -111,7 +111,7 @@ def main(fp, **configs):
     c.update(configs)
     url = c["logging_url"]
     if url is not None:
-        set_up_webhook(url, logger, al)  # I don't want to log discord stuff to webhooks
+        set_up_webhook(url, logger, al, cl)  # I don't want to log discord stuff to webhooks
     prefix = 'wd!' if c["prefix"] is None else c["prefix"]
     bot = commands.Bot(command_prefix=prefix)
     with accounting.Server(c["url"]) as server:
@@ -122,7 +122,7 @@ def main(fp, **configs):
 if __name__ == '__main__':
     al = add_logger(accounting.__name__)
     add_logger(discord.__name__)
-    add_logger(commands.__name__)
+    cl = add_logger(commands.__name__)
     logger = add_logger(__name__)
     logger.info('Started!')
     main()
