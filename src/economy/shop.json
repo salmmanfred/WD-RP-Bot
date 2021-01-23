@@ -1,14 +1,19 @@
-[   
+{   
     
-    {
-        "name": "Gun",
-        "val": 100,
-        "emoji": "🇦"
-    },
-    {
-        "name": "Souls",
-        "val": 1000000,
-        "emoji": "🇧"
-    }
+    "page1":[
+        {
+            "name": "Gun",
+            "value": 100,
+            "emoji": ":regional_indicator_a:",
+            "emoji2": "🇦"
+        },
+        {
+            "name": "Souls",
+            "value": 1000000,
+            "emoji": ":regional_indicator_b:",
+            "emoji2" : "🇧"
+        }
+    ]   
+
     
-]
+}
