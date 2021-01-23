@@ -10,6 +10,7 @@ import argparse
 from economy import shop
 
 _commands = []  # an array of command callables
+_events = []
 _server = None
 _ready = False
 logger = logging.getLogger(__name__)
@@ -26,7 +27,14 @@ def register_commands(bot: commands.Bot, s: Server):
     for i in _commands:
         bot.add_command(i)
 
+    for i in _events:
+        bot.event(i)
+
     _ready = True
+
+
+def _add_event(event: Coroutine):
+    _events.append(event)
 
 
 def _add_command(cmd: Coroutine):
@@ -37,19 +45,28 @@ def _add_command(cmd: Coroutine):
 async def _balance(ctx: Context, *args, **kwargs):
     raise NotImplementedError()
 
+
 _add_command(_balance)
 
 
 @commands.command(name="ping")
 async def _ping(ctx: Context, *args, **kwargs):
-    await ctx.reply(f'Pong! - took me {round((time.time()-datetime.timestamp(ctx.message.created_at))*1000, 2)}ms to send a response')
+    await ctx.reply(
+        f'Pong! - took me {round((time.time() - datetime.timestamp(ctx.message.created_at)) * 1000, 2)}ms to send a response')
+
 
 _add_command(_ping)
+
 
 @commands.command(name="shop")
 async def _shop(ctx: Context, *args, **kwargs):
     await shop.shop(ctx, get_server())
 
+
 _add_command(_shop)
 
 
+async def on_reaction_add(reaction, user):
+    pass
+
+_add_event(on_reaction_add)
