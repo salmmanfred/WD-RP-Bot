@@ -1,7 +1,7 @@
 from typing import Coroutine
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context
+from discord.ext.commands import Context, Bot
 from accounting import Server
 from datetime import datetime
 import time
@@ -12,8 +12,12 @@ from economy import shop
 _commands = []  # an array of command callables
 _events = []
 _server = None
-_ready = False
+_bot = None
 logger = logging.getLogger(__name__)
+
+
+def get_bot() -> Bot:
+    return _bot
 
 
 def get_server() -> Server:
@@ -22,15 +26,14 @@ def get_server() -> Server:
 
 def register_commands(bot: commands.Bot, s: Server):
     global _server
-    global _ready
+    global _bot
+    _bot = bot
     _server = s
     for i in _commands:
         bot.add_command(i)
 
     for i in _events:
         bot.event(i)
-
-    _ready = True
 
 
 def _add_event(event: Coroutine):
@@ -67,6 +70,7 @@ _add_command(_shop)
 
 
 async def on_reaction_add(reaction, user):
-    pass
+    await shop.buy(reaction, user, get_server(), get_bot())
+
 
 _add_event(on_reaction_add)

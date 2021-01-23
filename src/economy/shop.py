@@ -2,6 +2,15 @@ import discord
 from discord.ext.commands import Context
 import json
 
+messages = []
+
+
+def cache_message(msg):
+    global messages
+    if len(messages) >= 49:
+        messages = []
+    messages.append(msg.id)
+
 
 async def bounce_back(ctx):
     await ctx.send("bounce")
@@ -9,19 +18,31 @@ async def bounce_back(ctx):
 
 async def shop(ctx: Context, server):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
-    shop_entries = json.load(open("economy/shop.json","r"))   
-    #server.add_shop_entry("Handgun",100,"🇦")
-    #server.add_shop_entry("Handgun",100,"🇧")
+    shop_entries = server.get_shop_entries()
 
-    shopen = server.get_shop_entries()
     if len(shop_entries) >= 10:
         return
     emojis = []
-    for x in shop_entries["gun"]:
-        embed_var.add_field(name=""+x["name"], value=f" "+ x["emoji"] +":" + str(x["value"]), inline=False)
-        emojis.append(x["emoji2"])
+    for i in shop_entries:
+        embed_var.add_field(name=i.item.name, value=f" {i.emoji} : {i.value}", inline=False)
+        emojis.append(i.emoji)
     msg = await ctx.reply(embed=embed_var)
-    # emoji = '\N{REGIONAL INDICATOR E}'
-    for i in shopen:
+    for i in shop_entries:
         await msg.add_reaction(i.emoji)
+    cache_message(msg)
 
+
+async def buy(reaction, user, server, bot):
+    embeds = discord.Embed(title="Confirmation", description="Purchase confirmation")
+    shopen = server.get_shop_entries()
+    if reaction.message.id in messages:
+        if user.id == reaction.message.reference.resolved.author.id:
+            for x in shopen:
+                if str(reaction) == str(x.emoji):
+                    embeds.add_field(name=x.item.name, value=str(x.value), inline=False)
+                    server.give(user.id, x.item)
+            await user.send(embed=embeds)
+
+    if reaction.message.author.id == bot.user.id:
+        if user.id != bot.user.id:
+            await reaction.message.remove_reaction(reaction, user)

@@ -50,11 +50,12 @@ class Server(object):
         return amount != 0
 
     def get_account(self, id) -> Account:
-        if isinstance(id, User):
-            return self.get_account(id.id)
         if isinstance(id, Account):
             return id
-        return self._get_session().query(Account).filter_by(id=id).one_or_none()
+        acc = self._get_session().query(Account).filter_by(id=id).one_or_none()
+        if acc is None:
+            acc = self.open_account(id)
+        return acc
 
     def open_account(self, user) -> Account:
         logger.info(f"opening account {user}")
