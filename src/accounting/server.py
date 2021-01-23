@@ -131,7 +131,9 @@ class Server(object):
         """
         return self.get_shop_entries(**filters)[0]
 
-    def add_shop_entry(self, name, value, type, emoji, uuid=None):
-        entry = ShopEntry(name=name, value=value, item=type, emoji=emoji, uuid=uuid)
+    def add_shop_entry(self, item, value, emoji, description="There is no description available for this entry", uuid=None):
+        item = ItemType[item] if isinstance(item, str) else item
+        entry = ShopEntry(value=value, item=item, emoji=emoji, entry_id=uuid, description=description)
         self._get_session().add(entry)
+        self._get_session().flush()
         return entry
