@@ -159,7 +159,7 @@ async def _get_inven(ctx):
         s = " "
         for x in get_server().get_account(ctx.message.author.id).get_inventory():
             s = s + str(x) + "\n"
-        embeds.add_field(name="Inventory",value=s,inline=False)
+        embeds.add_field(name="Inventory", value=s, inline=False)
 
         await ctx.reply(embed=embeds)
 

@@ -17,14 +17,12 @@ async def clear_cache(ctx):
     s = "C"
     for x in messages:
         s = s + str(x) + "\n"
-    embed_var.add_field(name="cache",value=s,inline=False)
+    embed_var.add_field(name="cache", value=s, inline=False)
     messages = []
     await ctx.reply(embed=embed_var)
 
-
 async def bounce_back(ctx):
     await ctx.send("bounce")
-
 
 async def shop(ctx: Context, server):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
@@ -41,7 +39,6 @@ async def shop(ctx: Context, server):
         await msg.add_reaction(i.emoji)
     cache_message(msg)
 
-
 async def buy(reaction, user, server, bot):
     embeds = None
     shopen = server.get_shop_entries()
@@ -54,7 +51,7 @@ async def buy(reaction, user, server, bot):
                         server.give(user.id, x.item)
                         embeds = discord.Embed(title="Confirmation", description="Purchase confirmation")
                         embeds.add_field(name=x.item.name, value=str(x.value), inline=False)
-                        embeds.add_field(name="Remaning funds",value=server.get_account(user.id).balance)
+                        embeds.add_field(name="Remaning funds", value=server.get_account(user.id).balance)
                     except ValueError:
                         embeds = discord.Embed(title="Failed", description="You don't have the funds to make that transfer")
 
