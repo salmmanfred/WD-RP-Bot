@@ -81,5 +81,6 @@ class CommandTests(unittest.TestCase):
             self.assertEqual(acc.balance, Decimal('0'))
         self.run_coro(test_transfer())
 
+
 if __name__ == '__main__':
     unittest.main()
