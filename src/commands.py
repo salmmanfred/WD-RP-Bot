@@ -1,5 +1,5 @@
 from typing import Coroutine
-from discord import Embed, Member
+from discord import Embed
 import discord
 from discord.ext import commands
 from discord.ext.commands import Context, Bot

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, BigInteger, DECIMAL, text, JSON
+from sqlalchemy import Column, BigInteger, DECIMAL, text
 from . import Base
 from .inventory import InventoryEntry
 import logging

@@ -33,8 +33,6 @@ formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] : %(mess
 ch.setFormatter(formatter)
 fh.setFormatter(formatter)
 
-#__default_config = defaultdict(lambda: None)
-
 
 class DiscordWebhookHandler(logging.Handler):
     _colour_map = {
@@ -80,7 +78,7 @@ def read_config(fp):
         return _default_config
     except Exception:
         logger.warning(f'{fp} is either malformed or non existent defaulting to the default configuration')
-    
+
     return _default_config
 
 
@@ -100,7 +98,7 @@ def set_up_webhook(url, *loggers):
 def main(fp, **configs):
     c = read_config(fp)
     print(type(c))
-    
+
     keys_to_delete = []
     for k in configs.keys():
         if configs[k] is None:

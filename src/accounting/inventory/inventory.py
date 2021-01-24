@@ -1,10 +1,10 @@
+import logging
 from sqlalchemy import Column, JSON, BigInteger, ForeignKey, INTEGER, types
 from sqlalchemy.ext.mutable import MutableList
 from . import Base
 from enum import Enum
-from .gun import *
-from .farm import *
-
+from .gun import Handgun, UZI, AK47, ShotGun, Rifle, HeavyAmmunition, NormalAmmo, ArmourPiercingAmmo
+from .farm import WheatFarm, BananaFarm, PotatoFarm
 logger = logging.getLogger(__name__)
 
 
@@ -29,11 +29,12 @@ class ItemType(Enum):
     UZI = 4
     Shotgun = 5
     Rifle = 6
+    AK47 = 7
 
     """Farm types:"""
-    WheatFarm = 7
-    PotatoFarm = 8
-    BananaFarm = 9
+    WheatFarm = 8
+    PotatoFarm = 9
+    BananaFarm = 10
 
 
 item_class_map = {
@@ -41,12 +42,13 @@ item_class_map = {
     ItemType.HeavyAmmunition.value: HeavyAmmunition,
     ItemType.ArmourPiercingAmmo.value: ArmourPiercingAmmo,
 
-    ItemType.Handgun.value: Handgun,
-    ItemType.UZI.value: UZI,
-    ItemType.Shotgun.value: ShotGun,
-    ItemType.Rifle.value: Rifle,
+    ItemType.Handgun: Handgun,
+    ItemType.UZI: UZI,
+    ItemType.Shotgun: ShotGun,
+    ItemType.Rifle: Rifle,
+    ItemType.AK47: AK47,
 
-    ItemType.WheatFarm.value: WheatFarm,
+    ItemType.WheatFarm: WheatFarm,
     ItemType.PotatoFarm.value: PotatoFarm,
     ItemType.BananaFarm.value: BananaFarm
 }

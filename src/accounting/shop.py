@@ -1,5 +1,5 @@
 from . import Base
-from sqlalchemy import Column, CHAR, types, text, TEXT, Unicode, types
+from sqlalchemy import Column, CHAR, text, TEXT, Unicode, types
 from uuid import uuid4
 from .inventory import ItemType
 

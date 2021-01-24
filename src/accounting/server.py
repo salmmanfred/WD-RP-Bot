@@ -81,9 +81,19 @@ class Server(object):
         return acc
 
     def get_shop_entries(self, **filters) -> List[ShopEntry]:
+        """
+        :param filters: the filters applied to the query
+        :return: all the shop entries that match the filters
+        """
         return self._get_session().query(ShopEntry).filter_by(**filters).all()
 
     def transfer_cash(self, source, destination, amount):
+        """
+        :param source: the source account to transfer from
+        :param destination: the destination to transfer too
+        :param amount: the amount th transfer
+        :return:
+        """
         source_acc = self.get_account(source)
         destination_acc = self.get_account(destination)
 
@@ -152,6 +162,7 @@ class Server(object):
 
     def get_shop_entry(self, **filters):
         """
+        gets the first shop entry with the filters
         :param filters: the filters to apply to the query
         :return: the first entry that matches your query
         """
@@ -159,11 +170,28 @@ class Server(object):
 
     def add_shop_entry(self, item, value, emoji, description="There is no description available for this entry",
                        uuid=None):
+        """
+        adds a shop entry with the given parameters
+        :param item:
+        :param value:
+        :param emoji:
+        :param description:
+        :param uuid:
+        :return the shop entry that you created:
+        """
         item = ItemType[item] if isinstance(item, str) else item
         entry = ShopEntry(value=value, item=item, emoji=emoji, entry_id=uuid, description=description)
         self._get_session().add(entry)
         self._get_session().flush()
         return entry
+
+    def remove_shop_entry(self, **filters):
+        """
+
+        :param filters:
+        :return:
+        """
+        self._get_session().query(ShopEntry).filter_by(**filters).delete()
 
     def get_permissions(self, role):
         id = role.id if isinstance(role, Role) else role

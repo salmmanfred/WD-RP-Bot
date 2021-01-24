@@ -1,6 +1,5 @@
 import discord
 from discord.ext.commands import Context
-import json
 
 messages = []
 
