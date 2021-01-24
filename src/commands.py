@@ -144,3 +144,7 @@ async def on_reaction_add(reaction, user):
 
 
 _add_event(on_reaction_add)
+
+@commands.command(name="cc")
+async def _clear_cache(ctx):
+    await shop.clear_cache(ctx)

@@ -10,6 +10,10 @@ def cache_message(msg):
         messages = []
     messages.append(msg.id)
 
+async clear_cache(ctx):
+    messages = []
+    await ctx.reply("done")
+
 
 async def bounce_back(ctx):
     await ctx.send("bounce")
@@ -43,8 +47,10 @@ async def buy(reaction, user, server, bot):
                         server.give(user.id, x.item)
                         embeds = discord.Embed(title="Confirmation", description="Purchase confirmation")
                         embeds.add_field(name=x.item.name, value=str(x.value), inline=False)
+                        embeds.add_field(name="Remaning funds",value=server.get_funbd)
                     except ValueError:
                         embeds = discord.Embed(title="Failed", description="You don't have the funds to make that transfer")
+
             await user.send(embed=embeds)
 
     if reaction.message.author.id == bot.user.id:
