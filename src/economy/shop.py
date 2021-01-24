@@ -21,13 +21,15 @@ async def clear_cache(ctx):
     messages = []
     await ctx.reply(embed=embed_var)
 
+
 async def bounce_back(ctx):
     await ctx.send("bounce")
+
 
 async def shop(ctx: Context, server):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
     shop_entries = server.get_shop_entries()
-    #server.add_shop_entry("Handgun",100,"🇦")
+    # server.add_shop_entry("Handgun",100,"🇦")
     if len(shop_entries) >= 10:
         return
     emojis = []
@@ -38,6 +40,7 @@ async def shop(ctx: Context, server):
     for i in shop_entries:
         await msg.add_reaction(i.emoji)
     cache_message(msg)
+
 
 async def buy(reaction, user, server, bot):
     embeds = None
@@ -60,3 +63,4 @@ async def buy(reaction, user, server, bot):
     if reaction.message.author.id == bot.user.id:
         if user.id != bot.user.id:
             await reaction.message.remove_reaction(reaction, user)
+            

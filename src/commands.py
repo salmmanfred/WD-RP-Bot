@@ -145,12 +145,15 @@ async def on_reaction_add(reaction, user):
 
 _add_event(on_reaction_add)
 
+
 @commands.command(name="cc")
 async def _clear_cache(ctx):
     if await handle_auth(ctx, Permission.All):
         await shop.clear_cache(ctx)
 
+
 _add_command(_clear_cache)
+
 
 @commands.command(name="inven")
 async def _get_inven(ctx):
