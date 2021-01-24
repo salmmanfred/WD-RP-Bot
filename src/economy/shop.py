@@ -33,14 +33,19 @@ async def shop(ctx: Context, server):
 
 
 async def buy(reaction, user, server, bot):
-    embeds = discord.Embed(title="Confirmation", description="Purchase confirmation")
+    embeds = None
     shopen = server.get_shop_entries()
     if reaction.message.id in messages:
         if user.id == reaction.message.reference.resolved.author.id:
             for x in shopen:
                 if str(reaction) == str(x.emoji):
-                    embeds.add_field(name=x.item.name, value=str(x.value), inline=False)
-                    server.give(user.id, x.item)
+                    try:
+                        server.remove_funds(user.id, x.value)
+                        server.give(user.id, x.item)
+                        embeds = discord.Embed(title="Confirmation", description="Purchase confirmation")
+                        embeds.add_field(name=x.item.name, value=str(x.value), inline=False)
+                    except ValueError:
+                        embeds = discord.Embed(title="Failed", description="You don't have the funds to make that transfer")
             await user.send(embed=embeds)
 
     if reaction.message.author.id == bot.user.id:

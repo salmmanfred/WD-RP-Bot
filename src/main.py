@@ -76,7 +76,7 @@ def add_logger(name=None):
 def read_config(fp):
     _default_config = defaultdict(lambda: None)
     try:
-        _default_config.update(json.load(open(fp,"r")))
+        _default_config.update(json.load(open(fp, "r")))
         return _default_config
     except Exception:
         logger.warning(f'{fp} is either malformed or non existent defaulting to the default configuration')
@@ -109,12 +109,12 @@ def main(fp, **configs):
     for k in keys_to_delete:
         del configs[k]
     c.update(configs)
-    url = c["logging_url"]
+    url = c.get("logging_url", None)
     if url is not None:
         set_up_webhook(url, logger, al, cl)  # I don't want to log discord stuff to webhooks
     prefix = 'wd!' if c["prefix"] is None else c["prefix"]
-    bot = commands.Bot(command_prefix=prefix)
-    with accounting.Server(c["url"]) as server:
+    bot = commands.Bot(command_prefix=prefix, owner_ids=c.get("owner_ids", []))
+    with accounting.Server(c["url"], bot) as server:
         register_commands(bot, server)
         bot.run(c["token"])
 

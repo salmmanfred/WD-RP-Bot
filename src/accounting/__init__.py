@@ -11,5 +11,6 @@ Session = sessionmaker(autocommit=True)
 from .account import Account
 from .shop import ShopEntry
 from .server import Server
+from .permission import Permission, PermissionsMap
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
