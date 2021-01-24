@@ -10,6 +10,7 @@ def cache_message(msg):
         messages = []
     messages.append(msg.id)
 
+
 async def clear_cache(ctx):
     global messages
    
@@ -63,4 +64,3 @@ async def buy(reaction, user, server, bot):
     if reaction.message.author.id == bot.user.id:
         if user.id != bot.user.id:
             await reaction.message.remove_reaction(reaction, user)
-            
