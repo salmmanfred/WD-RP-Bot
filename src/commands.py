@@ -8,6 +8,7 @@ from datetime import datetime
 import time
 import logging
 from economy import shop
+from decimal import Decimal
 
 _commands = []  # an array of command callables
 _events = []
@@ -22,6 +23,10 @@ def get_server() -> Server:
 
 def get_bot() -> Bot:
     return _bot
+
+
+def get_acc_from_mention(mention: str):
+    return get_server().get_account(int("".join([i for i in mention if i.isdigit()])))
 
 
 def register_commands(bot: commands.Bot, s: Server):
@@ -56,11 +61,46 @@ async def handle_auth(ctx: Context, *permissions, user=None):
 @commands.command(name="balance", aliases=["bal"])
 async def _balance(ctx: Context, *args, **kwargs):
     bal = get_server().get_account(ctx.author.id).balance
+    bal = bal.normalize() if bal == 0 else bal
     embed = Embed(colour=ctx.author.colour, title="balance", description=f"your balance is {bal}")
     await ctx.reply(embed=embed)
 
 
 _add_command(_balance)
+
+
+@commands.command(name="print-money")
+async def _print_money(ctx: Context, amount, destination, *args, **kwargs):
+    if await handle_auth(ctx, Permission.PrintMoney):
+        destination_acc = get_acc_from_mention(destination)
+        get_server().print_money(destination_acc, Decimal(amount))
+        await ctx.reply(embed=Embed(title='Done!', description='Money Printed!'))
+
+
+_add_command(_print_money)
+
+
+@commands.command(name="remove-funds")
+async def _remove_funds(ctx: Context, amount, source, *args, **kwargs):
+    if await handle_auth(ctx, Permission.RemoveFunds):
+        source_acc = get_acc_from_mention(source)
+        get_server().remove_funds(source_acc, Decimal(amount))
+        await ctx.reply(embed=Embed(title="Done!", description="Funds Removed!"))
+
+
+_add_command(_remove_funds)
+
+
+@commands.command(name="transfer")
+async def _transfer(ctx: Context, amount, destination, *args, **kwargs):
+    if await handle_auth(ctx, Permission.Transfer):
+        destination_acc = get_acc_from_mention(destination)
+        source_acc = get_server().get_account(ctx.author.id)
+        get_server().transfer_cash(source_acc, destination_acc, Decimal(amount))
+        await ctx.reply(embed=Embed(title="Done!", description="Money Transferred"))
+
+
+_add_command(_transfer)
 
 
 @commands.command(name="ping")
