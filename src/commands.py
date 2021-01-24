@@ -157,13 +157,12 @@ _add_command(_clear_cache)
 
 @commands.command(name="inven")
 async def _get_inven(ctx):
-    if await handle_auth(ctx, Permission.All):
-        embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"', color=0x00ff00)
-        s = " "
-        for x in get_server().get_account(ctx.message.author.id).get_inventory():
-            s = s + str(x) + "\n"
-        embeds.add_field(name="Inventory", value=s, inline=False)
+    embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"', color=0x00ff00)
+    s = " "
+    for x in get_server().get_account(ctx.message.author.id).get_inventory():
+        s = s + str(x) + "\n"
+    embeds.add_field(name="Inventory", value=s, inline=False)
 
-        await ctx.reply(embed=embeds)
+    await ctx.reply(embed=embeds)
 
 _add_command(_get_inven)
