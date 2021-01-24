@@ -13,7 +13,6 @@ def cache_message(msg):
 
 async def clear_cache(ctx):
     global messages
-   
     embed_var = discord.Embed(title="CACHE", description='CACHE', color=0x00ff00)
     s = "C"
     for x in messages:
