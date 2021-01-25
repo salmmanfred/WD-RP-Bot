@@ -32,6 +32,9 @@ class TestBot(object):
         self.commands = {}
         self.events = {}
 
+    def add_cog(self, *args):
+        pass
+
     def add_command(self, cmd: Command):
         self.commands[cmd.name] = cmd
         for alias in cmd.aliases:
