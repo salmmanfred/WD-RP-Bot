@@ -173,8 +173,7 @@ class Server(object):
         """
         return self.get_shop_entries(**filters)[0]
 
-    def add_shop_entry(self, item, value, emoji, description="There is no description available for this entry",
-                       uuid=None):
+    def add_shop_entry(self, item, value, emoji, **kwargs):
         """
         adds a shop entry with the given parameters
         :param item:
@@ -185,7 +184,7 @@ class Server(object):
         :return the shop entry that you created:
         """
         item = ItemType[item] if isinstance(item, str) else item
-        entry = ShopEntry(value=value, item=item, emoji=emoji, entry_id=uuid, description=description)
+        entry = ShopEntry(value=value, item=item, emoji=emoji, **kwargs)
         self._get_session().add(entry)
         self._get_session().commit()
         return entry
