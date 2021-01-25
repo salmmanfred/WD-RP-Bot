@@ -124,7 +124,7 @@ _add_command(_shop_short)
 @commands.command(name="shop-gun")
 async def _shop_gun(ctx: Context, *args, **kwargs):
     if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop(ctx, get_server(),"gun")
+        await shop.shop(ctx, get_server(), "gun")
 
 
 _add_command(_shop_gun)
@@ -133,7 +133,7 @@ _add_command(_shop_gun)
 @commands.command(name="shop-ammo")
 async def _shop_gun(ctx: Context, *args, **kwargs):
     if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop(ctx, get_server(),"ammo")
+        await shop.shop(ctx, get_server(), "ammo")
 
 
 _add_command(_shop_gun)
