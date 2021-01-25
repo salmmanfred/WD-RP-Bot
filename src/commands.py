@@ -12,9 +12,35 @@ from decimal import Decimal
 
 _commands = []  # an array of command callables
 _events = []
+_cogs = []
 _server = None
 _bot = None
 logger = logging.getLogger(__name__)
+
+
+def _add_event(event: Coroutine):
+    _events.append(event)
+
+
+def _add_command(cmd: Coroutine):
+    _commands.append(cmd)
+
+
+def _add_cog(cog):
+    _cogs.append(cog)
+
+
+class CommandFailureCog(commands.Cog):
+    """A cog that handles failed commands and sends a message in response"""
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        embed = Embed(colour=discord.Colour.red(), title="Command Failed",
+                      description=str(error))
+        await ctx.reply(embed=embed)
+
+
+_add_cog(CommandFailureCog())
 
 
 def get_server() -> Server:
@@ -40,13 +66,8 @@ def register_commands(bot: commands.Bot, s: Server):
     for i in _events:
         bot.event(i)
 
-
-def _add_event(event: Coroutine):
-    _events.append(event)
-
-
-def _add_command(cmd: Coroutine):
-    _commands.append(cmd)
+    for i in _cogs:
+        bot.add_cog(i)
 
 
 async def handle_auth(ctx: Context, *permissions, user=None):
@@ -179,13 +200,6 @@ async def _credits(ctx: Context, *args, **kwargs):
 _add_command(_credits)
 
 
-async def on_reaction_add(reaction, user):
-    await shop.buy(reaction, user, get_server(), get_bot())
-
-
-_add_event(on_reaction_add)
-
-
 @commands.command(name="cc")
 async def _clear_cache(ctx):
     if await handle_auth(ctx, Permission.All):
@@ -197,7 +211,8 @@ _add_command(_clear_cache)
 
 @commands.command(name="inven")
 async def _get_inven(ctx):
-    embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"', color=0x00ff00)
+    embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"',
+                           color=0x00ff00)
     s = " "
     for x in get_server().get_account(ctx.message.author.id).get_inventory():
         s = s + str(x) + "\n"
@@ -205,4 +220,11 @@ async def _get_inven(ctx):
 
     await ctx.reply(embed=embeds)
 
+
 _add_command(_get_inven)
+
+
+async def on_reaction_add(reaction, user):
+    await shop.buy(reaction, user, get_server(), get_bot())
+
+_add_event(on_reaction_add)
