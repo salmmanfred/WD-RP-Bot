@@ -157,7 +157,6 @@ async def _shop_gun(ctx: Context, *args, **kwargs):
         await shop.shop(ctx, get_server(), "ammo")
 
 
-
 _add_command(_shop_gun)
 
 
