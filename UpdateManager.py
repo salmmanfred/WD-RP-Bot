@@ -28,24 +28,33 @@ def download_file(url):
 def start_latest():
     global bot_process
     get_latest()
-    bot_process = subprocess.Popen("./latest/src/main.py")
+    fp = "./latest/src/main.py"
+    bot_process = subprocess.Popen(["/usr/bin/python3", fp])
 
 
 def get_latest():
     r = requests.get(repo_url + "/releases/latest").json()
-    base_url = r["url"]
+
+    def link():
+        try:
+            os.unlink('./latest')
+        except:
+            pass
+        os.symlink(f'./{r["tag_name"]}/WD-RP-Bot-{r["tag_name"]}/', './latest')
+
     if r["tag_name"] in os.listdir() and bot_process is not None:
         return
 
-    elif r["tag_name"] in os.listdir:
-        os.symlink(f'./{r["tag_name"]}', './latest')
-        start_latest()
+    elif r["tag_name"] in os.listdir():
+        link()
 
-    assets = request.get(base_url + "/assets").json()
-    asset = [asset for asset in assets if asset["name"] == "source.zip"][0]
-    zipped_src_file_fp = download_file(asset["browser_download_url"])
-    shutil.unpack_archive(zipped_src_file_fp, zipped_src_file_fp[r["tag_name"]])
-    os.symlink(f'./{r["tag_name"]}', './latest')
+    if bot_process is not None:
+        bot_process.kill()
+
+    zipped_src_file_fp = download_file(f"https://github.com/gamingdiamond982/WD-RP-Bot/archive/{r['tag_name']}.zip")
+    shutil.unpack_archive(zipped_src_file_fp, f'./{r["tag_name"]}')
+    os.remove(f'./{r["tag_name"]}.zip')
+    link()
 
 
 @app.route('/update', methods=["POST"])
@@ -65,3 +74,4 @@ def update():
 
 if __name__ == '__main__':
     start_latest()
+    app.run(port=5000)
