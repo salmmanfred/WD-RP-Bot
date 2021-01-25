@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from discord import RequestsWebhookAdapter, Webhook
 from discord.ext import commands
 
