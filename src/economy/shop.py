@@ -22,14 +22,24 @@ async def clear_cache(ctx):
     await ctx.reply(embed=embed_var)
 
 
+async def cache(ctx):
+    global messages
+    embed_var = discord.Embed(title="CACHE", description='CACHE', color=0x00ff00)
+    s = "Cache:\n"
+    for x in messages:
+        s = s + str(x) + "\n"
+    embed_var.add_field(name="cache", value=s, inline=False)
+    await ctx.reply(embed=embed_var)
+
+
 async def bounce_back(ctx):
     await ctx.send("bounce")
 
 
-async def shop(ctx: Context, server):
+async def shop(ctx: Context, server, types):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
-    shop_entries = server.get_shop_entries()
-    # server.add_shop_entry("Handgun",100,"🇦")
+    shop_entries = server.get_shop_entries(page=types)
+    # server.add_shop_entry("Ammunition",100,"🇦", page="ammo")
     if len(shop_entries) >= 10:
         return
     emojis = []
@@ -42,9 +52,16 @@ async def shop(ctx: Context, server):
     cache_message(msg)
 
 
+async def shop_short(ctx):
+    embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
+    embed_var.add_field(name="Gun shop", value="wd!shop-gun", inline=True)
+    embed_var.add_field(name="Ammunition shop", value="wd!shop-ammo", inline=True)
+    await ctx.reply(embed=embed_var)
+
+
 async def buy(reaction, user, server, bot):
     embeds = None
-    shopen = server.get_shop_entries()
+    shopen = server.get_shop_entries(page=reaction.message.reference.resolved.content.strip(" ").replace("wd!shop-", ""))
     if reaction.message.id in messages:
         if user.id == reaction.message.reference.resolved.author.id:
             for x in shopen:

@@ -134,12 +134,30 @@ _add_command(_ping)
 
 
 @commands.command(name="shop")
-async def _shop(ctx: Context, *args, **kwargs):
+async def _shop_short(ctx: Context, *args, **kwargs):
     if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop(ctx, get_server())
+        await shop.shop_short(ctx)
 
 
-_add_command(_shop)
+_add_command(_shop_short)
+
+
+@commands.command(name="shop-gun")
+async def _shop_gun(ctx: Context, *args, **kwargs):
+    if await handle_auth(ctx, Permission.BuyItem):
+        await shop.shop(ctx, get_server(), "gun")
+
+
+_add_command(_shop_gun)
+
+
+@commands.command(name="shop-ammo")
+async def _shop_gun(ctx: Context, *args, **kwargs):
+    if await handle_auth(ctx, Permission.BuyItem):
+        await shop.shop(ctx, get_server(), "ammo")
+
+
+_add_command(_shop_gun)
 
 
 def parse_auth_cmd(ctx, role, auth):
@@ -207,6 +225,15 @@ async def _clear_cache(ctx):
 
 
 _add_command(_clear_cache)
+
+
+@commands.command(name="cache")
+async def _get_cache(ctx):
+    if await handle_auth(ctx, Permission.All):
+        await shop.cache(ctx)
+
+
+_add_command(_get_cache)
 
 
 @commands.command(name="inven")
