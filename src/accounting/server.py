@@ -77,6 +77,7 @@ class Server(object):
             acc = Account(id=user)
 
         self._get_session().add(acc)
+        self._get_session().commit()
         logger.info(f"opened account {acc.id}")
         return acc
 
@@ -99,18 +100,21 @@ class Server(object):
 
         if _can_transfer(source, amount):
             source_acc.balance -= amount
-            destination_acc.balance -= amount
+            destination_acc.balance += amount
+            self._get_session().commit()
         else:
             raise ValueError("source does not have the required funds to make that transfer")
 
     def print_money(self, destination, amount):
         destination_acc = self.get_account(destination)
         destination_acc.balance += amount
+        self._get_session().commit()
 
     def remove_funds(self, source, amount):
         source_acc = self.get_account(source)
         if _can_transfer(source_acc, amount):
             source_acc.balance -= amount
+            self._get_session().commit()
         else:
             raise ValueError("source account does not have that much cash")
 
@@ -131,6 +135,7 @@ class Server(object):
             item = items[index]
             source_entry.remove_item(index)
             destination_entry.add_item(item)
+            self._get_session().commit()
 
         if index is not None:
             transfer(index)
@@ -150,7 +155,7 @@ class Server(object):
         if entry is None:
             entry = InventoryEntry(owner=account.id, item_type=type)
             self._get_session().add(entry)
-            self._get_session().flush()
+            self._get_session().commit()
         return entry
 
     def give(self, user, item, amount=1):
@@ -158,7 +163,7 @@ class Server(object):
         entry = self.get_inventory_entry(acc, item)
         for i in range(amount):
             entry.add_item(item_class_map[item]())
-        self._get_session().flush()
+        self._get_session().commit()
 
     def get_shop_entry(self, **filters):
         """
@@ -182,7 +187,7 @@ class Server(object):
         item = ItemType[item] if isinstance(item, str) else item
         entry = ShopEntry(value=value, item=item, emoji=emoji, entry_id=uuid, description=description)
         self._get_session().add(entry)
-        self._get_session().flush()
+        self._get_session().commit()
         return entry
 
     def remove_shop_entry(self, **filters):
@@ -203,9 +208,10 @@ class Server(object):
         for i in permissions:
             p = PermissionsMap(role=id, permission=i)
             self._get_session().add(p)
-            self._get_session().flush()
+            self._get_session().commit()
 
     def remove_permissions(self, role, *permissions):
         id = role.id if isinstance(role, Role) else role
         for i in permissions:
             self._get_session().query(PermissionsMap).filter_by(role=id, permission=i).delete()
+            self._get_session().commit()

@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
-Session = sessionmaker(autocommit=True)
+Session = sessionmaker(autocommit=False)
 from .account import Account
 from .shop import ShopEntry
 from .server import Server
