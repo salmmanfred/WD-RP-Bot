@@ -10,4 +10,5 @@ class ShopEntry(Base):
     value = Column(types.DECIMAL, server_default=text('0'))
     item = Column(types.Enum(ItemType))
     emoji = Column(Unicode(1))
+    page = Column(TEXT)
     description = Column(TEXT, server_default="There is no description available for this entry")
