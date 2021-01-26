@@ -141,20 +141,8 @@ async def _give(ctx: Context, type, amount, destination):
 _add_command(_give)
 
 
-
 @commands.command(name="shoot")
 async def _shoot(ctx: Context, gun_type, ammo_type, victim, *args, **kwargs):
-    item_perm_map = {
-        ItemType.Handgun: Permission.ShootHandgun,
-        ItemType.UZI: Permission.ShootUZI,
-        ItemType.AK47: Permission.ShootAK47,
-        ItemType.Shotgun: Permission.ShootShotgun,
-        ItemType.Rifle: Permission.ShootRifle,
-
-        ItemType.Ammunition: Permission.UseNormalAmmo,
-        ItemType.HeavyAmmunition: Permission.UseHeavyAmmo,
-        ItemType.ArmourPiercingAmmo: Permission.UseArmourPiercingAmmo
-    }
     raise NotImplementedError()
 
 
