@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context, Bot
 from accounting import Server, Permission
+from accounting.inventory import ItemType
 from datetime import datetime
 import time
 import logging
@@ -124,6 +125,39 @@ async def _transfer(ctx: Context, amount, destination, *args, **kwargs):
 _add_command(_transfer)
 
 
+@commands.command(name="give")
+async def _give(ctx: Context, type, amount, destination):
+    if await handle_auth(ctx, Permission.Transfer):
+        destination_acc = get_acc_from_mention(destination)
+        source_acc = get_server().get_account(ctx.author.id)
+        amount = int(amount)
+        type = ItemType[type]
+
+        get_server().transfer_item(source_acc, destination_acc, type, amount=amount)
+        resp_embed = Embed(colour=ctx.author.colour, title="Done!", description="Transferred item!")
+        await ctx.reply(embed=resp_embed)
+
+
+_add_command(_give)
+
+
+
+@commands.command(name="shoot")
+async def _shoot(ctx: Context, gun_type, ammo_type, victim, *args, **kwargs):
+    item_perm_map = {
+        ItemType.Handgun: Permission.ShootHandgun,
+        ItemType.UZI: Permission.ShootUZI,
+        ItemType.AK47: Permission.ShootAK47,
+        ItemType.Shotgun: Permission.ShootShotgun,
+        ItemType.Rifle: Permission.ShootRifle,
+
+        ItemType.Ammunition: Permission.UseNormalAmmo,
+        ItemType.HeavyAmmunition: Permission.UseHeavyAmmo,
+        ItemType.ArmourPiercingAmmo: Permission.UseArmourPiercingAmmo
+    }
+    raise NotImplementedError()
+
+
 @commands.command(name="ping")
 async def _ping(ctx: Context, *args, **kwargs):
     await ctx.reply(
@@ -236,14 +270,13 @@ async def _get_cache(ctx):
 _add_command(_get_cache)
 
 
-@commands.command(name="inven")
-async def _get_inven(ctx):
+@commands.command(name="inven", aliases=("inventory",))
+async def _get_inven(ctx, *args, **kwargs):
     embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"',
                            color=0x00ff00)
-    s = " "
-    for x in get_server().get_account(ctx.message.author.id).get_inventory():
-        s = s + str(x) + "\n"
-    embeds.add_field(name="Inventory", value=s, inline=False)
+    inventory = get_server().get_account(ctx.message.author.id).get_inventory()
+    for i in inventory.keys():
+        embeds.add_field(name=f"{i.name}s:", value="".join([f"{i}, " for i in inventory[i]]))
 
     await ctx.reply(embed=embeds)
 
@@ -253,5 +286,6 @@ _add_command(_get_inven)
 
 async def on_reaction_add(reaction, user):
     await shop.buy(reaction, user, get_server(), get_bot())
+
 
 _add_event(on_reaction_add)

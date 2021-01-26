@@ -28,9 +28,6 @@ class Account(Base):
         self.user = await bot.fetch_user(self.id)
         return self.user
 
-    def get_inventory(self):
-        return [i.get_items() for i in self.inventory]
-
     @classmethod
     def from_user(cls, user: User):
         return cls(user=user, id=user.id)

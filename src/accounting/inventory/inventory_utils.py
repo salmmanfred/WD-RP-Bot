@@ -1,6 +1,6 @@
 class InventoryType:
     def __init__(self, **kwargs):
-        pass
+        self.limit = None
 
     def to_json(self):
         return {}
