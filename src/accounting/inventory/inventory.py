@@ -2,8 +2,6 @@ import logging
 from sqlalchemy import Column, JSON, BigInteger, ForeignKey, INTEGER, types
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
-
-from ..account import Account
 from . import Base
 from enum import Enum
 from .gun import Handgun, UZI, AK47, ShotGun, Rifle, HeavyAmmunition, NormalAmmo, ArmourPiercingAmmo, BulletProofVest
@@ -74,7 +72,7 @@ class InventoryEntry(Base):
     owner = Column(BigInteger, ForeignKey('accounts.id'))
     item_type = Column(types.Enum(ItemType))
     item_info = Column(MutableList.as_mutable(JSON), server_default='[]')
-    owner_acc = relationship(Account)
+    owner_acc = relationship("Account")
 
     def _create_item(self, args):
         item_class_map[self.item_type.value](**args)
