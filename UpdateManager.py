@@ -7,6 +7,7 @@ import json
 import requests
 import shutil
 import subprocess
+from gevent.pywsgi import WSGIServer
 
 bot_process = None
 app = flask.Flask(__name__)
@@ -38,7 +39,7 @@ def get_latest():
     def link():
         try:
             os.unlink('./latest')
-        except:
+        except FileNotFoundError:
             pass
         os.symlink(f'./{r["tag_name"]}/WD-RP-Bot-{r["tag_name"]}/', './latest')
 
@@ -60,18 +61,21 @@ def get_latest():
 @app.route('/update', methods=["POST"])
 def update():
     assert request.method == "POST"
-    signature = request.headers.get("X-Hub-Signature")
-    if not signature or not signature.startswith('sha1='):
-        logs.write(f'{request.remote_addr} sent a request without a valid signature\n')
-        abort(400, "Signature required")
+    req_data = request.get_data()
+    x_hub_sig = request.headers.get("X-Hub-Signature").split('=')[1]
+    print("Got x_hub_sig: " + x_hub_sig)
+    print("Generating sig from\n\tgithub_secret: " + github_secret)
+    print("\trequest.data: " + str(req_data) + "\n\n\n")
+    signature = hmac.new(github_secret.encode('utf-8'), req_data, hashlib.sha1).hexdigest()
+    print("Trying: " + signature + " ; " + x_hub_sig)
+    if not hmac.compare_digest(signature, x_hub_sig):
+        abort(401, "Unauthorised")
 
-    digest = hmac.new(github_secret.encode(), request.data, hashlib.sha1).hexdigest()
+    start_latest()
 
-    if not hmac.compare_digest(signature, "sha1=" + digest):
-        logs.write(f'{request.remote_addr} sent a request with an invalid signature\n')
-        abort(400, "Invalid signature")
+    return {"code": 200}
 
 
 if __name__ == '__main__':
     start_latest()
-    app.run(port=5000)
+    WSGIServer(('', 5000), app)
