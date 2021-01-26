@@ -20,7 +20,7 @@ class Account(Base):
         super().__init__(**kwargs)
 
     def get_inventory(self):
-        return [i.get_items() for i in self.inventory]
+        return {i.item_type: i.get_items() for i in self.inventory}
 
     async def get_user(self, bot: Client = None):
         self.user = bot.get_user(self.id)

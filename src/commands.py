@@ -116,9 +116,11 @@ _add_command(_remove_funds)
 @commands.command(name="transfer")
 async def _transfer(ctx: Context, amount, destination, *args, **kwargs):
     if await handle_auth(ctx, Permission.Transfer):
+        amount = Decimal(amount)
+        assert amount > 0
         destination_acc = get_acc_from_mention(destination)
         source_acc = get_server().get_account(ctx.author.id)
-        get_server().transfer_cash(source_acc, destination_acc, Decimal(amount))
+        get_server().transfer_cash(source_acc, destination_acc, amount)
         await ctx.reply(embed=Embed(title="Done!", description="Money Transferred"))
 
 

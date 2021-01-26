@@ -75,7 +75,7 @@ class InventoryEntry(Base):
     owner_acc = relationship("Account")
 
     def _create_item(self, args):
-        item_class_map[self.item_type.value](**args)
+        item_class_map[self.item_type](**args)
 
     def get_items(self):
         # noinspection PyArgumentList
