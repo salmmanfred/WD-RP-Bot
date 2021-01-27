@@ -19,6 +19,9 @@ class Account(Base):
         self.user = user
         super().__init__(**kwargs)
 
+    def get_inventory(self):
+        return {i.item_type: i.get_items() for i in self.inventory}
+
     async def get_user(self, bot: Client = None):
         self.user = bot.get_user(self.id)
         if self.user is not None:
@@ -27,9 +30,6 @@ class Account(Base):
             return None
         self.user = await bot.fetch_user(self.id)
         return self.user
-
-    def get_inventory(self):
-        return [i.get_items() for i in self.inventory]
 
     @classmethod
     def from_user(cls, user: User):

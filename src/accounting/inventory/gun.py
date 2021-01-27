@@ -2,6 +2,12 @@ from .inventory_utils import InventoryType
 from time import time
 
 
+class BulletProofVest(InventoryType):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.health_modifier = 1000
+
+
 class Ammunition(InventoryType):
     def __init__(self, value, damage_modifier, **kwargs):
         super().__init__(**kwargs)
