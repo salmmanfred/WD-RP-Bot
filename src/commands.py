@@ -228,11 +228,11 @@ _add_command(_de_authorise)
 @commands.command(name="credits")
 async def _credits(ctx: Context, *args, **kwargs):
     embed = Embed(colour=ctx.author.colour, title="Credits",
-                  description="Giving credit to the amazing devs of this bot")
+                  description="Giving credit to the amazing devs of this bot:")
 
     text = ""
     for i in get_bot().owner_ids:
-        text += f"many thanks to <@{i}> for helping develop this bot,\n"
+        text += f"Many thanks to <@{i}> for helping develop this bot,\n"
 
     embed.add_field(name="authors", value=text)
 
