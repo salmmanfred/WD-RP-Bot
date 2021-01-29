@@ -234,7 +234,7 @@ async def _credits(ctx: Context, *args, **kwargs):
     for i in get_bot().owner_ids:
         text += f"Many thanks to <@{i}> for helping develop this bot,\n"
 
-    embed.add_field(name="authors", value=text)
+    embed.add_field(name="Authors", value=text)
 
     await ctx.reply(embed=embed)
 
