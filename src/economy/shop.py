@@ -54,14 +54,16 @@ async def shop(ctx: Context, server, types):
 
 async def shop_short(ctx):
     embed_var = discord.Embed(title="SHOP", description='"A shop that will suit all your needs"', color=0x00ff00)
-    embed_var.add_field(name="Gun shop", value="wd!shop-gun", inline=True)
-    embed_var.add_field(name="Ammunition shop", value="wd!shop-ammo", inline=True)
+    embed_var.add_field(name="Gun shop", value="wd!shop gun", inline=True)
+    embed_var.add_field(name="Ammunition shop", value="wd!shop ammo", inline=True)
     await ctx.reply(embed=embed_var)
 
 
 async def buy(reaction, user, server, bot):
     embeds = None
-    shopen = server.get_shop_entries(page=reaction.message.reference.resolved.content.strip(" ").replace("wd!shop-", ""))
+    page = reaction.message.reference.resolved.content.replace("wd!shop", "").strip()
+    print(page)
+    shopen = server.get_shop_entries(page=page)
     if reaction.message.id in messages:
         if user.id == reaction.message.reference.resolved.author.id:
             for x in shopen:

@@ -75,11 +75,9 @@ class InventoryEntry(Base):
     owner_acc = relationship("Account")
 
     def _create_item(self, args):
-        i = item_class_map[self.item_type](**args)
-        return i
+        return item_class_map[self.item_type](**args)
 
     def get_items(self):
-        # noinspection PyArgumentList
         return [self._create_item(i) for i in self.item_info]
 
     def add_item(self, item):
@@ -87,7 +85,7 @@ class InventoryEntry(Base):
         self.item_info.append(item.to_json())
 
     def remove_item(self, index=0):
-        logger.info(f"Removed {self.item_info[index]} from <@{self.owner}>'s inventory")
+        logger.info(f"Removed {self._create_item(**self.item_info[index])} from <@{self.owner}>'s inventory")
         self.item_info.pop(index)
 
     def equip_item(self, index=0):

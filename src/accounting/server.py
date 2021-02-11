@@ -10,6 +10,10 @@ from . import Account
 from .permission import PermissionsMap, Permission
 from .inventory.inventory import InventoryEntry, item_class_map, ItemType, reversed_class_map
 from . import ShopEntry
+from .configuration import Configuration
+import asyncio
+import time
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +24,7 @@ def _can_transfer(source: Account, amount: Decimal):
 
 class Server(object):
 
-    def __init__(self, url, bot):
+    def __init__(self, url, bot=None, spt=10):
         logger.info("Starting the server!")
         self._bot = bot
         logger.debug(f"connecting to the database at {url}")
@@ -30,7 +34,38 @@ class Server(object):
         logger.debug("Creating database tables")
         Base.metadata.create_all(self.engine)
         logger.debug("Tables created successfully")
+        logger.info("Reading the config data")
+        self.last_tick_timestamp = int(self._get_config_val("LAST_TICK_TIMESTAMP", int(
+            datetime.combine(datetime.utcnow(), datetime.min.time()).timestamp())))
+        asyncio.get_event_loop().create_task(self.tick_loop(spt))
         logger.info("Server started successfully")
+
+    async def tick_loop(self, spt=10):
+        while 1:
+            await asyncio.sleep(spt)
+            next_tick_timestamp = self.last_tick_timestamp + 24 * 60 * 60
+            while next_tick_timestamp <= time.time():
+                await self.clock(next_tick_timestamp)
+                next_tick_timestamp = self.last_tick_timestamp + 24 * 60 * 60
+
+    async def clock(self, timestamp):
+        self.last_tick_timestamp = timestamp
+        self._set_config_val("LAST_TICK_TIMESTAMP", self.last_tick_timestamp)
+        # TODO: some clock related activities
+
+    def _get_config_val(self, key, default=None):
+        entry = self._get_session().query(Configuration).filter_by(key=key).one_or_none()
+        if entry is None:
+            entry = Configuration(key=key, value=str(default))
+            self._get_session().add(entry)
+            self._get_session().commit()
+        return entry.value
+
+    def _set_config_val(self, key, value):
+        if self._get_config_val(key, default=value) != value:
+            entry = self._get_session().query(Configuration).filter_by(key=key).one()
+            entry.value = value
+            self._get_session().commit()
 
     def _get_session(self) -> orm.Session:
         return self.session
@@ -53,7 +88,7 @@ class Server(object):
 
     def close(self):
         logger.info("Stopping the server")
-        self._get_session().flush()
+        self._get_session().commit()
         self._get_session().close()
         logger.info("Stopped the server")
 

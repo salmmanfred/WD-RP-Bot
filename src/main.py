@@ -98,7 +98,6 @@ def set_up_webhook(url, *loggers):
 @click.option('--url', help='the url for the database')
 def main(fp, **configs):
     c = read_config(fp)
-    print(type(c))
 
     keys_to_delete = []
     for k in configs.keys():
