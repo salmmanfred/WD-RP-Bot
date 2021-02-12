@@ -11,7 +11,7 @@ import logging
 from economy import shop
 from decimal import Decimal
 
-_commands = []  # an array of command callables
+_commands = []
 _events = []
 _cogs = []
 _server = None
@@ -92,7 +92,10 @@ _add_command(_balance)
 
 
 @commands.command(name="print-money")
-async def _print_money(ctx: Context, amount, destination, *args, **kwargs):
+async def _print_money(ctx: Context, amount, destination):
+    """
+    prints <amount> to <destination>
+    """
     if await handle_auth(ctx, Permission.PrintMoney):
         destination_acc = get_acc_from_mention(destination)
         get_server().print_money(destination_acc, Decimal(amount))
@@ -103,7 +106,10 @@ _add_command(_print_money)
 
 
 @commands.command(name="remove-funds")
-async def _remove_funds(ctx: Context, amount, source, *args, **kwargs):
+async def _remove_funds(ctx: Context, amount, source):
+    """
+    removes <amount> from <source>
+    """
     if await handle_auth(ctx, Permission.RemoveFunds):
         source_acc = get_acc_from_mention(source)
         get_server().remove_funds(source_acc, Decimal(amount))
@@ -114,7 +120,10 @@ _add_command(_remove_funds)
 
 
 @commands.command(name="transfer")
-async def _transfer(ctx: Context, amount, destination, *args, **kwargs):
+async def _transfer(ctx: Context, amount, destination):
+    """
+    transfers <amount> to <destination>
+    """
     if await handle_auth(ctx, Permission.Transfer):
         amount = Decimal(amount)
         assert amount > 0
@@ -129,6 +138,9 @@ _add_command(_transfer)
 
 @commands.command(name="give")
 async def _give(ctx: Context, type, amount, destination):
+    """
+    gives <destination> <amount> of <type>
+    """
     if await handle_auth(ctx, Permission.Transfer):
         destination_acc = get_acc_from_mention(destination)
         source_acc = get_server().get_account(ctx.author.id)
@@ -144,12 +156,18 @@ _add_command(_give)
 
 
 @commands.command(name="shoot")
-async def _shoot(ctx: Context, gun_type, ammo_type, victim, *args, **kwargs):
+async def _shoot(ctx: Context, gun_type, ammo_type, victim):
+    """
+    shoots <victim> with a gun of type <gun_type> and ammo of type <ammo_type>
+    """
     raise NotImplementedError()
 
 
 @commands.command(name="ping")
-async def _ping(ctx: Context, *args, **kwargs):
+async def _ping(ctx: Context):
+    """
+    pings the bot
+    """
     await ctx.reply(
         f'Pong! - took me {round((time.time() - datetime.timestamp(ctx.message.created_at)) * 1000, 2)}ms to send a response')
 
@@ -158,30 +176,18 @@ _add_command(_ping)
 
 
 @commands.command(name="shop")
-async def _shop_short(ctx: Context, *args, **kwargs):
+async def _shop(ctx: Context, page=None):
+    """
+    opens the shop menu on <page>
+    """
     if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop_short(ctx)
+        if page is None:
+            await shop.shop_short(ctx)
+        else:
+            await shop.shop(ctx, get_server(), page)
 
 
-_add_command(_shop_short)
-
-
-@commands.command(name="shop-gun")
-async def _shop_gun(ctx: Context, *args, **kwargs):
-    if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop(ctx, get_server(), "gun")
-
-
-_add_command(_shop_gun)
-
-
-@commands.command(name="shop-ammo")
-async def _shop_gun(ctx: Context, *args, **kwargs):
-    if await handle_auth(ctx, Permission.BuyItem):
-        await shop.shop(ctx, get_server(), "ammo")
-
-
-_add_command(_shop_gun)
+_add_command(_shop)
 
 
 def parse_auth_cmd(ctx, role, auth):
@@ -200,7 +206,10 @@ def parse_auth_cmd(ctx, role, auth):
 
 
 @commands.command(name="authorise", aliases=["authorize"])
-async def _authorise(ctx: Context, role, auth: str, *args, **kwargs):
+async def _authorise(ctx: Context, role, auth: str):
+    """
+    gives <role>'s permission to do the actions associated with <auth>
+    """
     if await handle_auth(ctx, Permission.GivePermissions):
         role, perm = parse_auth_cmd(ctx, role, auth)
         get_server().give_permissions(role, perm)
@@ -213,7 +222,10 @@ _add_command(_authorise)
 
 
 @commands.command(name="de-authorise", aliases=["deauthorise", "deauthorize", "de-authorize"])
-async def _de_authorise(ctx: Context, role, auth: str, *args, **kwargs):
+async def _de_authorise(ctx: Context, role, auth: str):
+    """
+    removes <role>'s permission to do the actions associated with <auth>
+    """
     if await handle_auth(ctx, Permission.RemovePermissions):
         role, perm = parse_auth_cmd(ctx, role, auth)
         get_server().remove_permissions(role, perm)
@@ -226,16 +238,11 @@ _add_command(_de_authorise)
 
 
 @commands.command(name="credits")
-async def _credits(ctx: Context, *args, **kwargs):
-    embed = Embed(colour=ctx.author.colour, title="Credits",
-                  description="Giving credit to the amazing devs of this bot:")
-
-    text = ""
-    for i in get_bot().owner_ids:
-        text += f"Many thanks to <@{i}> for helping develop this bot,\n"
-
-    embed.add_field(name="Authors", value=text)
-
+async def _credits(ctx: Context):
+    """
+    shows the credits
+    """
+    embed = Embed(colour=ctx.author.colour, title="Credits", description="Credit goes to gamingdiamond982 and salmmanfred for developing this bot")
     await ctx.reply(embed=embed)
 
 
@@ -244,6 +251,9 @@ _add_command(_credits)
 
 @commands.command(name="cc")
 async def _clear_cache(ctx):
+    """
+    clears the shops cache
+    """
     if await handle_auth(ctx, Permission.All):
         await shop.clear_cache(ctx)
 
@@ -253,6 +263,9 @@ _add_command(_clear_cache)
 
 @commands.command(name="cache")
 async def _get_cache(ctx):
+    """
+    returns the shops cache
+    """
     if await handle_auth(ctx, Permission.All):
         await shop.cache(ctx)
 
@@ -261,7 +274,10 @@ _add_command(_get_cache)
 
 
 @commands.command(name="inven", aliases=("inventory",))
-async def _get_inven(ctx, *args, **kwargs):
+async def _get_inven(ctx):
+    """
+    returns the contents of your inventory
+    """
     embeds = discord.Embed(title="Inventory", description='"An inventory that will suit all your needs"',
                            color=0x00ff00)
     inventory = get_server().get_account(ctx.message.author.id).get_inventory()

@@ -13,7 +13,6 @@ bot_process = None
 app = flask.Flask(__name__)
 github_secret = json.load(open('./config.json', "r"))["github_secret"]
 repo_url = "https://api.github.com/repos/gamingdiamond982/WD-RP-Bot"
-logs = open('./logs.txt', 'a')
 
 
 def download_file(url):
@@ -41,7 +40,7 @@ def get_latest():
             os.unlink('./latest')
         except FileNotFoundError:
             pass
-        os.symlink(f'./{r["tag_name"]}/WD-RP-Bot-{r["tag_name"]}/', './latest')
+        os.symlink(f'./{r["name"]}/', './latest')
 
     if r["tag_name"] in os.listdir() and bot_process is not None:
         return
@@ -53,8 +52,8 @@ def get_latest():
         bot_process.kill()
 
     zipped_src_file_fp = download_file(f"https://github.com/gamingdiamond982/WD-RP-Bot/archive/{r['tag_name']}.zip")
-    shutil.unpack_archive(zipped_src_file_fp, f'./{r["tag_name"]}')
-    os.remove(f'./{r["tag_name"]}.zip')
+    shutil.unpack_archive(zipped_src_file_fp, './')
+    os.remove(f'./{r["name"]}.zip')
     link()
 
 
@@ -63,11 +62,7 @@ def update():
     assert request.method == "POST"
     req_data = request.get_data()
     x_hub_sig = request.headers.get("X-Hub-Signature").split('=')[1]
-    print("Got x_hub_sig: " + x_hub_sig)
-    print("Generating sig from\n\tgithub_secret: " + github_secret)
-    print("\trequest.data: " + str(req_data) + "\n\n\n")
     signature = hmac.new(github_secret.encode('utf-8'), req_data, hashlib.sha1).hexdigest()
-    print("Trying: " + signature + " ; " + x_hub_sig)
     if not hmac.compare_digest(signature, x_hub_sig):
         abort(401, "Unauthorised")
 
